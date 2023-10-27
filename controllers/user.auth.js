@@ -8,6 +8,20 @@ module.exports = {
         try {
             let {email,password} = req.body
 
+            let userExist = await prisma.user.findUnique({
+                where:{
+                    email
+                }
+            })
+            if(userExist){
+                return res.status(400).json({
+                    status:false,
+                    message:'Bad Request',
+                    error:'Email already exist',
+                    data:null
+                })
+            }
+
             if(!email||!password){
                 return res.status(400).json({
                     status:false,
@@ -17,7 +31,7 @@ module.exports = {
                 })
             }
             let hashPassword = await bcrypt.hash(password,10)
-            let user = await prisma.user.create({
+            let data = await prisma.user.create({
                 data:{
                     email,
                     password:hashPassword
@@ -27,7 +41,7 @@ module.exports = {
                 status:true,
                 message:'OK',
                 error:null,
-                data: {user}
+                data: {data}
             })
         } catch (err) {
             next(err)
@@ -73,40 +87,21 @@ module.exports = {
         }
     },
 
-    authenticate:async(req,res, next)=>{
+    authenticate:async (req, res) => {
         try {
-            let {token} = req.headers
-            if(!token){
-                return res.status(400).json({
-                    status:false,
-                    message:'Bad Request',
-                    error:'Token is required',
-                    data:null
-                })
-            }
-            let decode = jwt.verify(token,process.env.JWT_SECRET)
-            let data = await prisma.user.findUnique({
-                where:{
-                    id:decode.id
-                },
-                select:{
-                    id:true,
-                    username:true,
-                    email:true
-                }
-            })
-            if(!data){
-                return res.status(400).json({
-                    status:false,
-                    message:'Bad Request',
-                    error:'User not found',
-                    data:null
-                })
-            }
-            req.user = data
-            next()
-        } catch (err) {
-            next(err)
+          if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized', data: null });
+          const user = await prisma.user.findUnique({
+            where: {
+              id: req.user.id,
+            },
+            include: {
+              profile: true,
+            },
+          });
+          delete user.password;
+          res.status(200).json({ success: true, message: 'User Authenticated', data: user });
+        } catch (error) {
+          res.status(500).json({ error: error.message });
         }
-    }
+      }
 }

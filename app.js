@@ -6,6 +6,7 @@ app.use(express.json())
 //Routes
 
 app.use('/api/v1',authroutes)
+app.use('/api/v1/profile', profileRoutes);
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)

@@ -15,4 +15,6 @@ Content-Type: application/json
     "email": "testemail@gmail.com",
     "password": "react"
 }
-### 3. User Logout API
+### 3. User auth API
+GET http://localhost:3000/api/v1/authenticate
+authorization : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjk4NDAyNDk0fQ.0F8nI1NMRrC-M8z-8u_3JV24Y0qWsfMuKSHzHpBMm2Y"

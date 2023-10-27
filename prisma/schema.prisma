@@ -23,6 +23,7 @@ model Profile{
   id              Int      @id @default(autoincrement())
   first_name      String
   last_name       String
+  birth_date      String
   profile_picture String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
