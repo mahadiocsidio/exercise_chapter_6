@@ -7,7 +7,7 @@ module.exports = {
     register: async (req,res,next)=>{
         try {
             let {email,password} = req.body
-            
+
             if(!email||!password){
                 return res.status(400).json({
                     status:false,
@@ -17,7 +17,7 @@ module.exports = {
                 })
             }
             let hashPassword = await bcrypt.hash(password,10)
-            let data = await prisma.user.create({
+            let user = await prisma.user.create({
                 data:{
                     email,
                     password:hashPassword
@@ -27,10 +27,10 @@ module.exports = {
                 status:true,
                 message:'OK',
                 error:null,
-                data
+                data: {user}
             })
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     },
 
@@ -68,8 +68,8 @@ module.exports = {
                     token
                 }
             })
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     },
 
@@ -105,8 +105,8 @@ module.exports = {
             }
             req.user = data
             next()
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     }
 }
